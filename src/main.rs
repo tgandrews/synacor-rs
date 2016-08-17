@@ -24,4 +24,20 @@ fn main() {
         count = file.read(&mut buffer).unwrap();
     }
 
+    let mut pointer = 0;
+
+    loop {
+        let op = memory[pointer];
+        if op == 0u16 {
+            break;
+        } else if op == 21u16 {
+            // NOOP
+        } else if op == 19u16 {
+            pointer += 1;
+            let char_val = (memory[pointer] as u8) as char;
+            print!("{}", char_val.to_string());
+        }
+
+        pointer += 1;
+    }
 }
