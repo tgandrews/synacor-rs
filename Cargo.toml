@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["Tom Andrews <git@tomandrews.co.uk>"]
 
 [dependencies]
+byteorder = "*"
