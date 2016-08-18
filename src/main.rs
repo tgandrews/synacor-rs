@@ -152,6 +152,15 @@ fn main() {
             let op = get_value(pointer, &memory, &registry);
             let result = !op & 32767;
             registry[reg_loc] = result;
+        } else if op == 17u16 {
+            // CALL
+            pointer += 1;
+            let new_loc = get_value(pointer, &memory, &registry) as usize;
+            let next_pointer = (pointer + 1) as u16;
+            println!("call {} next_pointer {}", new_loc, next_pointer);
+            stack.push(next_pointer);
+            pointer = new_loc;
+            continue;
         } else if op == 19u16 {
             // PRINT
             pointer += 1;
@@ -160,6 +169,8 @@ fn main() {
             print!("{}", char_val.to_string());
         } else if op == 21u16 {
             // NOOP
+        } else {
+            panic!("Unknown op: {}", op)
         }
 
         pointer += 1;
