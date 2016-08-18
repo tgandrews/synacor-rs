@@ -8,15 +8,14 @@ use std::path::Path;
 use byteorder::{LittleEndian, ReadBytesExt};
 
 fn get_value(val:usize, memory:&Vec<u16>, registry: &[u16]) -> usize {
-    let reg_loc = val % 32768;
-    let res:usize;
+    let res = memory[val] as usize;
 
-    if val >= 32768 {
-        res = registry[reg_loc] as usize;
+    if res >= 32768 {
+        let reg_loc = res % 32768;
+        registry[reg_loc] as usize
     } else {
-        res = memory[val] as usize;
+        res
     }
-    res
 }
 
 fn main() {
@@ -49,7 +48,7 @@ fn main() {
             pointer = get_value(pointer, &memory, &registry);
             continue;
         } else if op == 7u16 {
-            // JT
+            // JF
             pointer += 1;
             let comp = get_value(pointer, &memory, &registry);
             pointer += 1;
