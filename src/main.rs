@@ -11,7 +11,7 @@ fn get_value(val:usize, memory:&Vec<u16>, registry: &[u16]) -> usize {
     let reg_loc = val % 32768;
     let res:usize;
 
-    if val > 32768 {
+    if val >= 32768 {
         res = registry[reg_loc] as usize;
     } else {
         res = memory[val] as usize;
@@ -47,6 +47,7 @@ fn main() {
             // JMP
             pointer += 1;
             pointer = get_value(pointer, &memory, &registry);
+            continue;
         } else if op == 21u16 {
             // NOOP
         } else if op == 19u16 {
