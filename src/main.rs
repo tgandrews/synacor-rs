@@ -6,6 +6,7 @@ use std::io::prelude::*;
 use std::io::Cursor;
 use std::path::Path;
 use byteorder::{LittleEndian, ReadBytesExt};
+use std::num::Wrapping;
 
 fn get_value(val:usize, memory:&Vec<u16>, registry: &[u16]) -> u16 {
     let res = memory[val];
@@ -124,6 +125,17 @@ fn main() {
             let op2 = get_value(pointer, &memory, &registry);
             let result = (op1 + op2) % 32768;
             registry[reg_loc] = result;
+        } else if op == 10u16 {
+            // MUL
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+            pointer += 1;
+            let op1 = get_value(pointer, &memory, &registry);
+            pointer += 1;
+            let op2 = get_value(pointer, &memory, &registry);
+            println!("MUL: {} * {}", op1, op2);
+            let result = (Wrapping(op1) * Wrapping(op2)) % Wrapping(32768u16);
+            registry[reg_loc] = result.0;            
         } else if op == 12u16 {
             // AND
             pointer += 1;
