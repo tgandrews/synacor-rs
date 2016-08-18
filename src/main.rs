@@ -134,6 +134,16 @@ fn main() {
             let op2 = get_value(pointer, &memory, &registry) as u16;
             let result = op1 & op2;
             registry[reg_loc] = result;
+        } else if op == 13u16 {
+            // OR
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+            pointer += 1;
+            let op1 = get_value(pointer, &memory, &registry) as u16;
+            pointer += 1;
+            let op2 = get_value(pointer, &memory, &registry) as u16;
+            let result = op1 | op2;
+            registry[reg_loc] = result;
         } else if op == 21u16 {
             // NOOP
         } else if op == 19u16 {
