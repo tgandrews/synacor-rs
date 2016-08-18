@@ -7,12 +7,12 @@ use std::io::Cursor;
 use std::path::Path;
 use byteorder::{LittleEndian, ReadBytesExt};
 
-fn get_value(val:usize, memory:&Vec<u16>, registry: &[u16]) -> usize {
-    let res = memory[val] as usize;
+fn get_value(val:usize, memory:&Vec<u16>, registry: &[u16]) -> u16 {
+    let res = memory[val];
 
-    if res >= 32768 {
-        let reg_loc = res % 32768;
-        registry[reg_loc] as usize
+    if res >= 32768u16 {
+        let reg_loc = (res % 32768) as usize;
+        registry[reg_loc]
     } else {
         res
     }
@@ -54,7 +54,7 @@ fn main() {
         } else if op == 2u16 {
             // PUSH
             pointer += 1;
-            let val = get_value(pointer, &memory, &registry) as u16;
+            let val = get_value(pointer, &memory, &registry);
             stack.push(val);
         } else if op == 3u16 {
             // POP
@@ -92,14 +92,14 @@ fn main() {
         } else if op == 6u16 {
             // JMP
             pointer += 1;
-            pointer = get_value(pointer, &memory, &registry);
+            pointer = get_value(pointer, &memory, &registry) as usize;
             continue;
         } else if op == 7u16 {
             // JF
             pointer += 1;
             let comp = get_value(pointer, &memory, &registry);
             pointer += 1;
-            let jmp_loc = get_value(pointer, &memory, &registry);
+            let jmp_loc = get_value(pointer, &memory, &registry)  as usize;
             if comp != 0 {
                 pointer = jmp_loc;
                 continue;
@@ -109,7 +109,7 @@ fn main() {
             pointer += 1;
             let comp = get_value(pointer, &memory, &registry);
             pointer += 1;
-            let jmp_loc = get_value(pointer, &memory, &registry);
+            let jmp_loc = get_value(pointer, &memory, &registry) as usize;
             if comp == 0 {
                 pointer = jmp_loc;
                 continue;
@@ -122,16 +122,16 @@ fn main() {
             let op1 = get_value(pointer, &memory, &registry);
             pointer += 1;
             let op2 = get_value(pointer, &memory, &registry);
-            let result = ((op1 + op2) % 32768) as u16;
+            let result = (op1 + op2) % 32768;
             registry[reg_loc] = result;
         } else if op == 12u16 {
             // AND
             pointer += 1;
             let reg_loc = (memory[pointer] % 32768) as usize;
             pointer += 1;
-            let op1 = get_value(pointer, &memory, &registry) as u16;
+            let op1 = get_value(pointer, &memory, &registry);
             pointer += 1;
-            let op2 = get_value(pointer, &memory, &registry) as u16;
+            let op2 = get_value(pointer, &memory, &registry);
             let result = op1 & op2;
             registry[reg_loc] = result;
         } else if op == 13u16 {
@@ -139,9 +139,9 @@ fn main() {
             pointer += 1;
             let reg_loc = (memory[pointer] % 32768) as usize;
             pointer += 1;
-            let op1 = get_value(pointer, &memory, &registry) as u16;
+            let op1 = get_value(pointer, &memory, &registry);
             pointer += 1;
-            let op2 = get_value(pointer, &memory, &registry) as u16;
+            let op2 = get_value(pointer, &memory, &registry);
             let result = op1 | op2;
             registry[reg_loc] = result;
         } else if op == 14u16 {
@@ -149,7 +149,7 @@ fn main() {
             pointer += 1;
             let reg_loc = (memory[pointer] % 32768) as usize;
             pointer += 1;
-            let op = get_value(pointer, &memory, &registry) as u16;
+            let op = get_value(pointer, &memory, &registry);
             let result = !op & 32767;
             registry[reg_loc] = result;
         } else if op == 21u16 {
