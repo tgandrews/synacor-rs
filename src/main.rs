@@ -28,6 +28,8 @@ fn main() {
     let mut buffer = [0u8; 2];
     let mut memory:Vec<u16> = Vec::new();
     let mut registry = [0u16; 8];
+    let mut stack:Vec<u16> = Vec::new();
+
     let mut count = file.read(&mut buffer).unwrap();
     while count > 0 {
         let val = Cursor::new(buffer).read_u16::<LittleEndian>().unwrap();
@@ -49,6 +51,16 @@ fn main() {
             pointer += 1;
             let value = get_value(pointer, &memory, &registry);
             registry[reg_loc] = value as u16;
+        } else if op == 2u16 {
+            // PUSH
+            pointer += 1;
+            let val = get_value(pointer, &memory, &registry) as u16;
+            stack.push(val);
+        } else if op == 3u16 {
+            // POP
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+            registry[reg_loc] = stack.pop().unwrap();
         } else if op == 4u16 {
             // EQ
             pointer += 1;
