@@ -27,7 +27,7 @@ fn main() {
 
     let mut buffer = [0u8; 2];
     let mut memory:Vec<u16> = Vec::new();
-    let registry = [0u16; 8];
+    let mut registry = [0u16; 8];
     let mut count = file.read(&mut buffer).unwrap();
     while count > 0 {
         let val = Cursor::new(buffer).read_u16::<LittleEndian>().unwrap();
@@ -42,6 +42,13 @@ fn main() {
         if op == 0u16 {
             // HALT
             break;
+        } else if op == 1u16 {
+            // SET
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+            pointer += 1;
+            let value = get_value(pointer, &memory, &registry);
+            registry[reg_loc] = value as u16;
         } else if op == 6u16 {
             // JMP
             pointer += 1;
