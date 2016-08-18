@@ -150,7 +150,7 @@ fn main() {
             let reg_loc = (memory[pointer] % 32768) as usize;
             pointer += 1;
             let op = get_value(pointer, &memory, &registry) as u16;
-            let result = 32767 - op;
+            let result = !op & 32767;
             registry[reg_loc] = result;
         } else if op == 21u16 {
             // NOOP
