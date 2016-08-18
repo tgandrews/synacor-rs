@@ -152,14 +152,14 @@ fn main() {
             let op = get_value(pointer, &memory, &registry);
             let result = !op & 32767;
             registry[reg_loc] = result;
-        } else if op == 21u16 {
-            // NOOP
         } else if op == 19u16 {
             // PRINT
             pointer += 1;
             let value = get_value(pointer, &memory, &registry);
             let char_val = (value as u8) as char;
             print!("{}", char_val.to_string());
+        } else if op == 21u16 {
+            // NOOP
         }
 
         pointer += 1;
