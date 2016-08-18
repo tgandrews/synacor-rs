@@ -48,6 +48,26 @@ fn main() {
             pointer += 1;
             pointer = get_value(pointer, &memory, &registry);
             continue;
+        } else if op == 7u16 {
+            // JT
+            pointer += 1;
+            let comp = get_value(pointer, &memory, &registry);
+            pointer += 1;
+            let jmp_loc = get_value(pointer, &memory, &registry);
+            if comp != 0 {
+                pointer = jmp_loc;
+                continue;
+            }
+        } else if op == 8u16 {
+            // JZ
+            pointer += 1;
+            let comp = get_value(pointer, &memory, &registry);
+            pointer += 1;
+            let jmp_loc = get_value(pointer, &memory, &registry);
+            if comp == 0 {
+                pointer = jmp_loc;
+                continue;
+            }
         } else if op == 21u16 {
             // NOOP
         } else if op == 19u16 {
