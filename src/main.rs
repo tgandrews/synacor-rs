@@ -117,13 +117,23 @@ fn main() {
         } else if op == 9u16 {
             // ADD
             pointer += 1;
-            let target = get_value(pointer, &memory, &registry);
+            let reg_loc = (memory[pointer] % 32768) as usize;
             pointer += 1;
             let op1 = get_value(pointer, &memory, &registry);
             pointer += 1;
             let op2 = get_value(pointer, &memory, &registry);
             let result = ((op1 + op2) % 32768) as u16;
-            registry[target] = result;
+            registry[reg_loc] = result;
+        } else if op == 12u16 {
+            // AND
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+            pointer += 1;
+            let op1 = get_value(pointer, &memory, &registry) as u16;
+            pointer += 1;
+            let op2 = get_value(pointer, &memory, &registry) as u16;
+            let result = op1 & op2;
+            registry[reg_loc] = result;
         } else if op == 21u16 {
             // NOOP
         } else if op == 19u16 {
