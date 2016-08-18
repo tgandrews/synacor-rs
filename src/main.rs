@@ -49,6 +49,20 @@ fn main() {
             pointer += 1;
             let value = get_value(pointer, &memory, &registry);
             registry[reg_loc] = value as u16;
+        } else if op == 4u16 {
+            // EQ
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+            pointer += 1;
+            let comp1 = get_value(pointer, &memory, &registry);
+            pointer += 1;
+            let comp2 = get_value(pointer, &memory, &registry);
+            let res = if comp1 == comp2 {
+                1
+            } else {
+                0
+            };
+            registry[reg_loc] = res;
         } else if op == 6u16 {
             // JMP
             pointer += 1;
