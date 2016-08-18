@@ -74,6 +74,16 @@ fn main() {
                 pointer = jmp_loc;
                 continue;
             }
+        } else if op == 9u16 {
+            // ADD
+            pointer += 1;
+            let target = get_value(pointer, &memory, &registry);
+            pointer += 1;
+            let op1 = get_value(pointer, &memory, &registry);
+            pointer += 1;
+            let op2 = get_value(pointer, &memory, &registry);
+            let result = ((op1 + op2) % 32768) as u16;
+            registry[target] = result;
         } else if op == 21u16 {
             // NOOP
         } else if op == 19u16 {
