@@ -133,9 +133,17 @@ fn main() {
             let op1 = get_value(pointer, &memory, &registry);
             pointer += 1;
             let op2 = get_value(pointer, &memory, &registry);
-            println!("MUL: {} * {}", op1, op2);
             let result = (Wrapping(op1) * Wrapping(op2)) % Wrapping(32768u16);
-            registry[reg_loc] = result.0;            
+            registry[reg_loc] = result.0;
+        } else if op == 11u16 {
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+            pointer += 1;
+            let op1 = get_value(pointer, &memory, &registry);
+            pointer += 1;
+            let op2 = get_value(pointer, &memory, &registry);
+            let result = op1 % op2;
+            registry[reg_loc] = result;
         } else if op == 12u16 {
             // AND
             pointer += 1;
@@ -164,14 +172,35 @@ fn main() {
             let op = get_value(pointer, &memory, &registry);
             let result = !op & 32767;
             registry[reg_loc] = result;
+        } else if op == 15u16 {
+            // READ MEM
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+            pointer += 1;
+            let mem_loc = get_value(pointer, &memory, &registry) as usize;
+            registry[reg_loc] = memory[mem_loc];
+        } else if op == 16u16 {
+            // WRITE MEM
+            pointer += 1;
+            let write_location = get_value(pointer, &memory, &registry) as usize;
+            pointer += 1;
+            let value = get_value(pointer, &memory, &registry);
+            memory[write_location] = value;
         } else if op == 17u16 {
             // CALL
             pointer += 1;
             let new_loc = get_value(pointer, &memory, &registry) as usize;
             let next_pointer = (pointer + 1) as u16;
-            println!("call {} next_pointer {}", new_loc, next_pointer);
             stack.push(next_pointer);
             pointer = new_loc;
+            continue;
+        } else if op == 18u16 {
+            // RET
+            let new_loc = match stack.pop() {
+                Some(loc) => loc,
+                None => break
+            };
+            pointer = new_loc as usize;
             continue;
         } else if op == 19u16 {
             // PRINT
