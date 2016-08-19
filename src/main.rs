@@ -3,7 +3,7 @@ extern crate byteorder;
 use std::error::Error;
 use std::fs::File;
 use std::io::prelude::*;
-use std::io::Cursor;
+use std::io::{self, Cursor};
 use std::path::Path;
 use byteorder::{LittleEndian, ReadBytesExt};
 use std::num::Wrapping;
@@ -30,6 +30,8 @@ fn main() {
     let mut memory:Vec<u16> = Vec::new();
     let mut registry = [0u16; 8];
     let mut stack:Vec<u16> = Vec::new();
+    let mut input_buffer:Vec<char> = Vec::new();
+    let mut input_buffer_pos = 0;
 
     let mut count = file.read(&mut buffer).unwrap();
     while count > 0 {
@@ -208,6 +210,27 @@ fn main() {
             let value = get_value(pointer, &memory, &registry);
             let char_val = (value as u8) as char;
             print!("{}", char_val.to_string());
+        } else if op == 20u16 {
+            // READ IN
+            pointer += 1;
+            let reg_loc = (memory[pointer] % 32768) as usize;
+
+            if input_buffer.len() == 0 {
+                let mut line = String::new();
+                let stdin = io::stdin();
+                stdin.lock().read_line(&mut line);
+                input_buffer = line.chars().collect::<Vec<char>>();
+            }
+
+            let character = input_buffer[input_buffer_pos] as u16;
+            input_buffer_pos += 1;
+
+            if character == 10u16 {
+                input_buffer = Vec::new();
+                input_buffer_pos = 0;
+            }
+            registry[reg_loc] = character;
+
         } else if op == 21u16 {
             // NOOP
         } else {
